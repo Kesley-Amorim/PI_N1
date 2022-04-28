@@ -406,20 +406,26 @@ private PImage mediana(PImage img) {
   return(aux);
 }
 
-private PImage segmenta(PImage img, PImage gt) {
+public PImage segmenta(PImage img, PImage gt) {
+  img.loadPixels();
+  gt.loadPixels();
   PImage aux = createImage(img.width, img.height, RGB);
   for (int y = 0; y < img.height; y++) {
     for (int x = 0; x < img.width; x++) {
       int pos = (y)*img.width + (x);
-      if(red(gt.pixels[pos]) == 255){
-        aux.pixels[pos] = img.pixels[pos];
+      if (red(gt.pixels[pos]) >= 240 && blue(gt.pixels[pos]) >= 240 && green(gt.pixels[pos]) >= 240) {
+        color r = int(red(img.pixels[pos]));
+        color g = int(green(img.pixels[pos]));
+        color b = int(blue(img.pixels[pos]));
+        aux.pixels[pos] = color(r, g, b);
+        aux.updatePixels();
       } else {
-      aux.pixels[pos] = color(0);
+        aux.pixels[pos] = color(0);
       }
     }
   }
-  image(aux,0,0);
+
+  image(aux, 0, 0);
   save("Processed" + "//" + "img_segment.jpg");
-  return aux;
+  return(aux);
 }
-    

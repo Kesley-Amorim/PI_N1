@@ -1,5 +1,8 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Queue;
+import java.util.LinkedList;
+import java.awt.Point;
 //Histograma
 private void histogram(PImage img) {
   background(255);
@@ -95,8 +98,8 @@ float gauss(int x, int y, float param) {
   float value;
   // Implementação da função gaussiana
   // pow -> Função para realizar potência - os parâmetros são a base e expoente, nessa ordem.
-  // exp -> Número de Euler's (2.71828...). 
-  value = (1/(2*PI*pow(param,2)) * (exp(-(pow(x,2) + pow(y,2))/2*pow(param,2))));
+  // exp -> Número de Euler's (2.71828...).
+  value = (1/(2*PI*pow(param, 2)) * (exp(-(pow(x, 2) + pow(y, 2))/2*pow(param, 2))));
   return value;
 }
 
@@ -104,59 +107,59 @@ private PImage gaussianBlur(PImage img, float paramGauss) {
   img.loadPixels();
   PImage aux = createImage(img.width, img.height, RGB); /* cria a imagem vazia do mesmo tamanho da img */
 
- //Criação dos Kernels em X e Y. (Eles são iguais).          
-  float[][] gx = {{gauss(-1,-1, paramGauss), gauss(0,-1, paramGauss), gauss(1,-1, paramGauss)},
-                  {gauss(-1,0, paramGauss), gauss(0,0, paramGauss), gauss(1,0, paramGauss)},
-                  {gauss(-1,1, paramGauss), gauss(0,1, paramGauss), gauss(1,1, paramGauss)}};
-                  
-  float[][] gy = {{gauss(-1,-1, paramGauss), gauss(0,-1, paramGauss), gauss(1,-1, paramGauss)},
-                  {gauss(-1,0, paramGauss), gauss(0,0, paramGauss), gauss(1,0, paramGauss)},
-                  {gauss(-1,1, paramGauss), gauss(0,1, paramGauss), gauss(1,1, paramGauss)}};
-  
+  //Criação dos Kernels em X e Y. (Eles são iguais).
+  float[][] gx = {{gauss(-1, -1, paramGauss), gauss(0, -1, paramGauss), gauss(1, -1, paramGauss)},
+    {gauss(-1, 0, paramGauss), gauss(0, 0, paramGauss), gauss(1, 0, paramGauss)},
+    {gauss(-1, 1, paramGauss), gauss(0, 1, paramGauss), gauss(1, 1, paramGauss)}};
+
+  float[][] gy = {{gauss(-1, -1, paramGauss), gauss(0, -1, paramGauss), gauss(1, -1, paramGauss)},
+    {gauss(-1, 0, paramGauss), gauss(0, 0, paramGauss), gauss(1, 0, paramGauss)},
+    {gauss(-1, 1, paramGauss), gauss(0, 1, paramGauss), gauss(1, 1, paramGauss)}};
+
   // Filtro Gaussiano
   for (int y = 0; y < img.height; y++) {
-    for (int x = 0; x < img.width; x++) { 
+    for (int x = 0; x < img.width; x++) {
       int jan = 1;
       int pos = (y)*img.width + (x); /* acessa o ponto em forma de vetor */
-      
+
       float mediaOx = 0, mediaOy = 0;
-      
+
       // Percorrer a janela
-      for(int i = jan*(-1); i <= jan; i++) {
+      for (int i = jan*(-1); i <= jan; i++) {
         for (int j = jan*(-1); j <= jan; j++) {
           // Encontrar a nova coordenada
           int disy = y+i;
           int disx = x+j;
           // Condicional para verificar se a coordenada está dentro da imagem.
-          if(disy >= 0 && disy < img.height &&
-             disx >= 0 && disx < img.width) {
-              int pos_aux = disy * img.width + disx;
-              // Adiciona as parciais da convolução no eixo X e Y.
-              float Ox = red(img.pixels[pos_aux]) * gx[i+1][j+1];
-              float Oy = red(img.pixels[pos_aux]) * gy[i+1][j+1];
-              mediaOx += Ox;
-              mediaOy += Oy;
-             }
+          if (disy >= 0 && disy < img.height &&
+            disx >= 0 && disx < img.width) {
+            int pos_aux = disy * img.width + disx;
+            // Adiciona as parciais da convolução no eixo X e Y.
+            float Ox = red(img.pixels[pos_aux]) * gx[i+1][j+1];
+            float Oy = red(img.pixels[pos_aux]) * gy[i+1][j+1];
+            mediaOx += Ox;
+            mediaOy += Oy;
+          }
         }
       }
-      
-      // Dado os dois vetores é necessário calcular a resultante. 
+
+      // Dado os dois vetores é necessário calcular a resultante.
       // Há varias maneiras de se realizar:
       // Raiz da soma ao quadrado
       float mediaFinal = sqrt(mediaOx*mediaOx + mediaOy*mediaOy);
-      
+
       //Absoluto de cada e soma
       //float mediaFinal = abs(mediaOx) + abs(mediaOy);
-      
+
       // Absoluto da soma geral
       //float mediaFinal = abs(mediaOx + mediaOy);
-      
+
       // Soma
       //float mediaFinal = mediaOx + mediaOy;
-      
+
       // Multiplicação
       //float mediaFinal = mediaOx * mediaOy;
-      
+
       // Valor calculado é atribuido para o pixel.
       aux.pixels[pos] = color(mediaFinal);
     }
@@ -338,24 +341,24 @@ private PImage bright(PImage img, float v) {
   return aux;
 }
 
-private PImage passaAltas(PImage img){  
-    img.loadPixels();
-// Kernel
-float[][] kernel = {{ -1, -1, -1}, 
-                    { -1,  9, -1}, 
-                    { -1, -1, -1}};
-                    
-                    
+private PImage passaAltas(PImage img) {
+  img.loadPixels();
+  // Kernel
+  float[][] kernel = {{ -1, -1, -1},
+    { -1, 9, -1},
+    { -1, -1, -1}};
+
+
   PImage edgeImg = createImage(img.width, img.height, RGB);
   // Loop through every pixel in the image.
-  for (int y = 1; y < img.height-1; y++) { 
-    for (int x = 1; x < img.width-1; x++) { 
+  for (int y = 1; y < img.height-1; y++) {
+    for (int x = 1; x < img.width-1; x++) {
       float sum = 0; // Soma do Kernel para o pixel
       for (int ky = -1; ky <= 1; ky++) {
         for (int kx = -1; kx <= 1; kx++) {
           // Calcula pixels adjascentes
           int pos = (y + ky)*img.width + (x + kx);
-         
+
           float val = red(img.pixels[pos]);
           // Multiplica valor do pixel com base no Kernel
           sum += kernel[ky+1][kx+1] * val;
@@ -365,39 +368,58 @@ float[][] kernel = {{ -1, -1, -1},
     }
   }
 
- // edgeImg.updatePixels();                 
+  // edgeImg.updatePixels();
+  save("Processed" + "//" + "img_passaAltas.jpg");
   return(edgeImg);
 }
 
-private PImage mediana(PImage img){
+private PImage mediana(PImage img) {
   img.loadPixels();
   PImage aux = createImage(img.width, img.height, RGB);
   // Filtro de Mediana
-  /* Percorre a imagem */ 
+  /* Percorre a imagem */
   for (int y = 0; y < img.height; y++) {
-    for (int x = 0; x < img.width; x++) { 
+    for (int x = 0; x < img.width; x++) {
       int jan = 2;
-      int pos = (y)*img.width + (x); 
+      int pos = (y)*img.width + (x);
       ArrayList<Integer> valores = new ArrayList<>();
-      
-      
+
+
       // janela tamanho 1
-      for(int i = jan*(-1); i <= jan; i++) {
+      for (int i = jan*(-1); i <= jan; i++) {
         for (int j = jan*(-1); j <= jan; j++) {
           int ny = y+i;
           int nx = x+j;
-          if(ny >= 0 && ny < img.height &&
-             nx >= 0 && nx < img.width) {
-              int pos_aux = ny * img.width + nx;
-              valores.add((int)(red(img.pixels[pos_aux])));
-             }
+          if (ny >= 0 && ny < img.height &&
+            nx >= 0 && nx < img.width) {
+            int pos_aux = ny * img.width + nx;
+            valores.add((int)(red(img.pixels[pos_aux])));
+          }
         }
-     }
-     
-     // Cálculo da Mediana
+      }
+
+      // Cálculo da Mediana
       Collections.sort(valores);
       aux.pixels[pos] = color(valores.get(valores.size()/2));
     }
   }
   return(aux);
+}
+
+private PImage segmenta(PImage img, PImage gt) {
+  PImage aux = createImage(img.width, img.height, RGB);
+  for (int y = 0; y < img.height; y++) {
+    for (int x = 0; x < img.width; x++) {
+      int pos = (y)*img.width + (x);
+      if(red(gt.pixels[pos]) == 255){
+        aux.pixels[pos] = img.pixels[pos];
+      } else {
+      aux.pixels[pos] = color(0);
+      }
+    }
   }
+  image(aux,0,0);
+  save("Processed" + "//" + "img_segment.jpg");
+  return aux;
+}
+    

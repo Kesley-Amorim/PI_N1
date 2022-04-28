@@ -16,15 +16,15 @@ void draw() {
   gs = passaAltas(gs);
   gs = mediana(gs);
   gs = mediaJanela(gs, 1);
-    gs = gaussianBlur(gs, 1.15);
-    for(int i = 0; i < 3; i++){gs = media4p(g);}
+    gs = gaussianBlur(gs, 1.17);
+    for(int i = 0; i < 4; i++){gs = media4p(g);}
   gs = mediaJanela(gs, 1);
   for (int i = 0; i < 5; i++) {
     gs = passaAltas(gs);
     gs = mediana(gs);
     gs = media4p(gs);
   }
-  gs=bright(gs,6);
+  gs=bright(gs,6.6);
 
   limiar(gs, 250);
    // gs = mediaJanela(gs, 3);

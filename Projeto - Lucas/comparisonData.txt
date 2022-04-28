@@ -1,0 +1,6 @@
+Total de acertos: 762025
+Falsos Positivos: 10762
+Falsos Negativos: 33
+Porcentagem de Falsos Positivos: 0.0 %
+Porcentagem de Falsos Negativos: 0.0 %
+Porcentagem de Precisão: 0.0 %

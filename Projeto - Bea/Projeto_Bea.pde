@@ -7,26 +7,26 @@ void setup() {
   noLoop();
 }
 void draw() {
-  PImage img = loadImage("Lucas.jpg");
+  PImage img = loadImage("Bea.jpg");
   histogram(img);
     
-  PImage gs = grayScale(img, 'R');
-   gs = mediaJanela(gs, 5);
+  PImage gs = grayScale(img, 'B');
+   gs = mediaJanela(gs, 2);
   gs = media4p(gs);
   gs = passaAltas(gs);
   gs = mediana(gs);
-  gs = mediaJanela(gs, 3);
-    gs = gaussianBlur(gs, 0.79);
-    for(int i = 0; i < 5; i++){gs = media4p(g);}
-  gs = mediaJanela(gs, 3);
-  for (int i = 0; i <3; i++) {
+  gs = mediaJanela(gs, 1);
+    gs = gaussianBlur(gs, 1.15);
+    for(int i = 0; i < 3; i++){gs = media4p(g);}
+  gs = mediaJanela(gs, 1);
+  for (int i = 0; i < 5; i++) {
     gs = passaAltas(gs);
     gs = mediana(gs);
     gs = media4p(gs);
   }
-  gs=bright(gs,1.03);
+  gs=bright(gs,6);
 
-  limiar(gs, 150);
+  limiar(gs, 250);
    // gs = mediaJanela(gs, 3);
 }
 
